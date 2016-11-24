@@ -19,4 +19,6 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^bookfinder/', include('bookfinder.urls', namespace="bookfinder")),
     url(r'^admin/', admin.site.urls),
+    url(r'^accounts/', include('registration.backends.simple.urls')),
+    url(r'^accounts/', include('django.contrib.auth.urls', namespace="auth"))
 ]
