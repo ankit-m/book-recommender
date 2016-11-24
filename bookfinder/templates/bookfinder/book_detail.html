@@ -1,13 +1,18 @@
+{% extends 'bookfinder/base.html' %}
+{% load bootstrap3 %}
+
+{% block title %}
 <h2>{{ book.name }}</h2>
 <h5>{{ book.review_set.count }} reviews ({{ book.average_rating | floatformat }} average rating)</h5>
+{% endblock %}
 
-
+{% block content %}
 <h3>Recent reviews</h3>
 
 {% if book.review_set.all %}
-<div>
+<div class="row">
     {% for review in book.review_set.all %}
-    <div>
+    <div class="col-xs-6 col-lg-4">
         <em>{{ review.comment }}</em>
         <h6>Rated {{ review.rating }} of 5 by {{ review.user_name }}</h6>
         <h5><a href="{% url 'bookfinder:review_detail' review.id %}">
@@ -23,8 +28,13 @@
 <h3>Add your review</h3>
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-<form action="{% url 'bookfinder:add_review' book.id %}" method="post">
+<form action="{% url 'bookfinder:add_review' book.id %}" method="post" class="form">
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Add" />
+    {% buttons %}
+    <button type="submit" class="btn btn-primary">
+      {% bootstrap_icon "star" %} Add
+    </button>
+    {% endbuttons %}
 </form>
+{% endblock %}

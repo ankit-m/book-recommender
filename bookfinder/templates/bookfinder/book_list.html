@@ -1,10 +1,14 @@
+{% extends 'bookfinder/base.html' %}
 
+{% block title %}
 <h2>Book list</h2>
+{% endblock %}
 
+{% block content %}
 {% if book_list %}
-<div>
+<div class="row">
     {% for book in book_list %}
-    <div>
+    <div class="col-xs-6 col-lg-4">
         <h4><a href="{% url 'bookfinder:book_detail' book.id %}">
         {{ book.name }}
         </a></h4>
@@ -16,3 +20,4 @@
 {% else %}
     <p>No books are available.</p>
 {% endif %}
+{% endblock %}
