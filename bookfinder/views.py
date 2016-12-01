@@ -34,6 +34,17 @@ def user_review_list(request, username=None):
     return render(request, 'bookfinder/user_review_list.html', context)
 
 @login_required
+def user_recommendation_list(request):
+    user_reviews = Review.objects.filter(user_name=request.user.username).prefetch_related('book')
+    user_reviews_book_ids = set(map(lambda x: x.book.id, user_reviews))
+    book_list = Book.objects.exclude(id__in=user_reviews_book_ids)
+
+    return render(
+        request,
+        'bookfinder/user_recommendation_list.html',
+        {'username': request.user.username, 'book_list': book_list})
+
+@login_required
 def add_review(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
     form = ReviewForm(request.POST)
