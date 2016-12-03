@@ -2,21 +2,48 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
-from .forms import ReviewForm
+from .forms import IdeaForm
 from .models import Review, Book, Cluster
 from django.contrib.auth.models import User
 from .suggestions import update_clusters
+from gensim.summarization import keywords
 import datetime
+import requests
+import json
 
-def review_list(request):
-    latest_review_list = Review.objects.order_by('-pub_date')[:9]
-    context = {'latest_review_list':latest_review_list}
-    return render(request, 'bookfinder/review_list.html', context)
+def add_book(book_name):
+    book = Book()
+    book.name = book_name
+    book.save()
 
-def review_detail(request, review_id):
-    review = get_object_or_404(Review, pk=review_id)
-    return render(request, 'bookfinder/review_detail.html', {'review': review})
+def make_api_call(payload):
+    URL = 'https://www.googleapis.com/books/v1/volumes?q='
+    for i in payload:
+        URL += i + ','
+    URL = URL[:-1]
+    print URL
+    r = json.loads(requests.get(URL).text)
+    return r
 
+@login_required
+def home(request):
+    form = IdeaForm()
+    user_name = request.user.username
+    book_list = []
+    if request.method == 'POST':
+        books = make_api_call(str(keywords(request.POST.get('idea'))).split('\n'))
+        for book in books['items']:
+            print book
+            volume = {}
+            volume['title'] = book['volumeInfo']['title']
+            try:
+                volume['description'] = book['volumeInfo']['description']
+            except KeyError:
+                volume['description'] = 'Not available'
+            volume['author'] = book['volumeInfo']['authors'][0]
+            book_list.append(volume)
+        return render(request, 'bookfinder/home.html', {'form': form, 'book_list': book_list})
+    return render(request, 'bookfinder/home.html', {'form': form})
 
 def book_list(request):
     book_list = Book.objects.order_by('-name')
@@ -74,21 +101,4 @@ def user_recommendation_list(request):
 def add_review(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
     form = ReviewForm(request.POST)
-    if form.is_valid():
-        rating = form.cleaned_data['rating']
-        comment = form.cleaned_data['comment']
-        user_name = request.user.username
-        review = Review()
-        review.book = book
-        review.user_name = user_name
-        review.rating = rating
-        review.comment = comment
-        review.pub_date = datetime.datetime.now()
-        review.save()
-        update_clusters()
-        # Always return an HttpResponseRedirect after successfully dealing
-        # with POST data. This prevents data from being posted twice if a
-        # user hits the Back button.
-        return HttpResponseRedirect(reverse('bookfinder:book_detail', args=(book.id,)))
-
     return render(request, 'bookfinder/book_detail.html', {'book': book, 'form': form})

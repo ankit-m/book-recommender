@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+
+{% block title %}
+  <h2>Book Finder</h2>
+{% endblock %}
+
+{% block content %}
+  <form action="" method="POST" class="form">
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      {% buttons %}
+      <button type="submit" class="btn btn-primary">
+        {% bootstrap_icon "star" %} Get Books
+      </button>
+      {% endbuttons %}
+  </form>
+  {% if book_list %}
+  <div class="row">
+      {% for book in book_list %}
+      <div class="col-xs-6 col-lg-4">
+          <h4>
+          {{ book.title }}
+          </h4>
+          <h6>{{ book.author }}</h6>
+          <p>{{ book.description|truncatewords:20|slice:"-4" }}...</p>
+      </div>
+      {% endfor %}
+  </div>
+  {% else %}
+    <p>Please type in your idea</p>
+  {% endif %}
+{% endblock %}

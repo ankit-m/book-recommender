@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 import numpy as np
 
 class Book(models.Model):
@@ -15,18 +16,9 @@ class Book(models.Model):
         return self.name
 
 class Review(models.Model):
-    RATING_CHOICES = (
-        (1, '1'),
-        (2, '2'),
-        (3, '3'),
-        (4, '4'),
-        (5, '5'),
-    )
     book = models.ForeignKey(Book)
-    pub_date = models.DateTimeField('date published')
     user_name = models.CharField(max_length=100)
-    comment = models.CharField(max_length=200)
-    rating = models.IntegerField(choices=RATING_CHOICES)
+    rating = models.FloatField(validators = [MinValueValidator(0.0), MaxValueValidator(10.0)])
 
 class Cluster(models.Model):
     name = models.CharField(max_length=100)

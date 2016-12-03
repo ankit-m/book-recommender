@@ -1,10 +1,4 @@
-from django.forms import ModelForm, Textarea
-from bookfinder.models import Review
+from django import forms
 
-class ReviewForm(ModelForm):
-    class Meta:
-        model = Review
-        fields = ['rating', 'comment']
-        widgets = {
-            'comment': Textarea(attrs={'cols': 40, 'rows': 15})
-        }
+class IdeaForm(forms.Form):
+    idea = forms.CharField(widget=forms.Textarea(attrs={'cols': 40, 'rows': 10}))
