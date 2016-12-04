@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from .forms import IdeaForm
@@ -13,11 +13,11 @@ import json
 def add_book(volume, user_name):
     book, createdbook = Book.objects.get_or_create(
         gid = volume['id'],
-        title = volume['title'],
-        author = volume['author'],
-        description = volume['description'],
-        url = volume['url']
     )
+    book.title = volume['title'],
+    book.author = volume['author'],
+    book.description = volume['description'],
+    book.url = volume['url']
     rating, createdbook = Rating.objects.get_or_create(
         book = book,
         user_name = user_name,
