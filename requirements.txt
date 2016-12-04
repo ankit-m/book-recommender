@@ -1,0 +1,7 @@
+django
+django-bootstrap3
+django-registration-redux
+numpy
+scipy
+scikit-learn
+gensim
