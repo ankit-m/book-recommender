@@ -23,7 +23,7 @@ def add_book(volume, user_name):
         user_name = user_name,
         rating = 1.0
     )
-    if createdbook == False:
+    if createdbook == True:
         book.save()
     rating.save()
 
@@ -42,6 +42,7 @@ def home(request):
     user_name = request.user.username
     book_list = []
     if request.method == 'POST':
+        form = IdeaForm(request.POST)
         inp = request.POST.get('idea')
         try:
             words = keywords(inp)
@@ -65,9 +66,10 @@ def home(request):
                 book_list.append(volume)
                 add_book(volume, user_name)
                 update_clusters()
-            return render(request, 'bookfinder/home.html', {'form': form, 'book_list': book_list, 'foo': foo})
+            return render(request, 'bookfinder/home.html', {'form': form, 'book_list': book_list})
         else:
             return render(request, 'bookfinder/home.html', {'form': form, 'error': 'Please type more.'})
+    form.idea = 'yooos'
     return render(request, 'bookfinder/home.html', {'form': form})
 
 @login_required
