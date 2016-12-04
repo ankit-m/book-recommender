@@ -1,6 +1,5 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from .forms import IdeaForm
 from .models import Rating, Book, Cluster
@@ -12,19 +11,20 @@ import requests
 import json
 
 def add_book(volume, user_name):
-    book, created = Book.objects.get_or_create(
+    book, createdbook = Book.objects.get_or_create(
         gid = volume['id'],
         title = volume['title'],
         author = volume['author'],
         description = volume['description'],
         url = volume['url']
     )
-    rating, created = Rating.objects.get_or_create(
+    rating, createdbook = Rating.objects.get_or_create(
         book = book,
         user_name = user_name,
         rating = 1.0
     )
-    book.save()
+    if createdbook == False:
+        book.save()
     rating.save()
 
 def make_api_call(payload):
@@ -53,7 +53,7 @@ def home(request):
                 volume = {}
                 volume['title'] = book['volumeInfo']['title']
                 volume['id'] = book['id']
-                volume['url'] = book['selfLink']
+                volume['url'] = book['volumeInfo']['infoLink']
                 try:
                     volume['description'] = book['volumeInfo']['description']
                 except KeyError:
@@ -65,7 +65,7 @@ def home(request):
                 book_list.append(volume)
                 add_book(volume, user_name)
                 update_clusters()
-            return render(request, 'bookfinder/home.html', {'form': form, 'book_list': book_list})
+            return render(request, 'bookfinder/home.html', {'form': form, 'book_list': book_list, 'foo': foo})
         else:
             return render(request, 'bookfinder/home.html', {'form': form, 'error': 'Please type more.'})
     return render(request, 'bookfinder/home.html', {'form': form})

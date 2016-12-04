@@ -19,9 +19,9 @@
   <div class="row">
       {% for book in book_list %}
       <div class="col-xs-6 col-lg-4">
-          <h4>
+          <h4><a href="{{ book.url }}">
           {{ book.title | truncatewords:4}}
-          </h4>
+          </a></h4>
           <h6>{{ book.author }}</h6>
           <p>{{ book.description|truncatewords:20 }}</p>
       </div>
