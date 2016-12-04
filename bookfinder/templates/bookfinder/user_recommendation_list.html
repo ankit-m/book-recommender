@@ -1,5 +1,23 @@
-{% extends 'bookfinder/book_list.html' %}
+{% extends 'base.html' %}
 
 {% block title %}
 <h2>Recommendations for {{ username }}</h2>
+{% endblock %}
+
+{% block content %}
+{% if book_list %}
+<div class="row">
+    {% for book in book_list %}
+    <div class="col-md-6">
+        <h4>
+        {{ book.title }}
+        </h4>
+        <h6>{{ book.author }}</h6>
+        <p>{{ book.description | truncatewords:60 }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+    <p>No book suggestions available.</p>
+{% endif %}
 {% endblock %}

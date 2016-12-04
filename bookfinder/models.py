@@ -9,6 +9,7 @@ class Book(models.Model):
     gid = models.CharField(max_length = 50, unique = True, default = 'NA')
     title = models.CharField(max_length = 200, default = 'NA')
     author = models.CharField(max_length = 50, default = 'NA')
+    url = models.URLField(default = 'NA')
     description = models.CharField(max_length = 5000, default = 'NA')
 
     def average_rating(self):

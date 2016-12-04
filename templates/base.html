@@ -4,28 +4,23 @@
 {% bootstrap_javascript %}
 
 {% block bootstrap3_content %}
+<nav class="navbar navbar-default">
+  <div class="navbar-header">
+    <a class="navbar-brand" href="{% url 'bookfinder:home' %}">Blockbuster</a>
+  </div>
+  <div id="navbar" class="navbar-collapse collapse">
+    <ul class="nav navbar-nav navbar-right">
+      {% if user.is_authenticated %}
+      <li><a>Hello {{ user.username }}</a></li>
+      <li><a href="{% url 'bookfinder:user_recommendation_list' %}">Book suggestions</a></li>
+      <li><a href="{% url 'auth:logout' %}">Logout</a></li>
+      {% else %}
+      <li><a href="{% url 'auth:login' %}">Login</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
 <div class="container">
-  <nav class="navbar navbar-default">
-    <div class="navbar-header">
-        <a class="navbar-brand" href="{% url 'bookfinder:home' %}">Blockbuster</a>
-    </div>
-    <div id="navbar" class="navbar-collapse collapse">
-        <ul class="nav navbar-nav">
-            <li><a href="{% url 'bookfinder:book_list' %}">Book list</a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-        {% if user.is_authenticated %}
-            <li><a>Hello {{ user.username }}</a></li>
-            <li><a href="{% url 'bookfinder:user_recommendation_list' %}">Book suggestions</a></li>
-            <li><a href="{% url 'auth:logout' %}">Logout</a></li>
-            {% else %}
-            <li><a href="{% url 'auth:login' %}">Login</a></li>
-            {% endif %}
-        </ul>
-    </div>
-  </nav>
-
-
     <h1>{% block title %}(no title){% endblock %}</h1>
 
     {% bootstrap_messages %}

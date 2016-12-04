@@ -28,6 +28,11 @@
       {% endfor %}
   </div>
   {% else %}
+    {% if error %}
+      <p style="color: red">
+        Please type more!
+      </p>
+    {% endif %}
     <p>Please type in your idea</p>
   {% endif %}
 {% endblock %}

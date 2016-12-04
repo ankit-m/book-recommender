@@ -16,7 +16,8 @@ def add_book(volume, user_name):
         gid = volume['id'],
         title = volume['title'],
         author = volume['author'],
-        description = volume['description']
+        description = volume['description'],
+        url = volume['url']
     )
     rating, created = Rating.objects.get_or_create(
         book = book,
@@ -41,42 +42,38 @@ def home(request):
     user_name = request.user.username
     book_list = []
     if request.method == 'POST':
-        books = make_api_call(str(keywords(request.POST.get('idea'))).split('\n'))
-        for book in books['items']:
-            volume = {}
-            volume['title'] = book['volumeInfo']['title']
-            volume['id'] = book['id']
-            try:
-                volume['description'] = book['volumeInfo']['description']
-            except KeyError:
-                volume['description'] = 'Not available'
-            try:
-                volume['author'] = book['volumeInfo']['authors'][0]
-            except KeyError:
-                volume['author'] = 'Not Available'
-            book_list.append(volume)
-            add_book(volume, user_name)
-            update_clusters()
-        return render(request, 'bookfinder/home.html', {'form': form, 'book_list': book_list})
+        inp = request.POST.get('idea')
+        try:
+            words = keywords(inp)
+        except Exception:
+            return render(request, 'bookfinder/home.html', {'form': form, 'error': 'Please type more.'})
+        if len(words) != 0:
+            books = make_api_call(str(words).split('\n'))
+            for book in books['items']:
+                volume = {}
+                volume['title'] = book['volumeInfo']['title']
+                volume['id'] = book['id']
+                volume['url'] = book['selfLink']
+                try:
+                    volume['description'] = book['volumeInfo']['description']
+                except KeyError:
+                    volume['description'] = 'Not available'
+                try:
+                    volume['author'] = book['volumeInfo']['authors'][0]
+                except KeyError:
+                    volume['author'] = 'Not Available'
+                book_list.append(volume)
+                add_book(volume, user_name)
+                update_clusters()
+            return render(request, 'bookfinder/home.html', {'form': form, 'book_list': book_list})
+        else:
+            return render(request, 'bookfinder/home.html', {'form': form, 'error': 'Please type more.'})
     return render(request, 'bookfinder/home.html', {'form': form})
-
-def book_list(request):
-    book_list = Book.objects.order_by('-name')
-    context = {'book_list':book_list}
-    return render(request, 'bookfinder/book_list.html', context)
-
-def book_detail(request, book_id):
-    book = get_object_or_404(Book, pk=book_id)
-    return render(request, 'bookfinder/book_detail.html', {'book': book})
 
 @login_required
 def user_recommendation_list(request):
-    # user_reviews = Rating.objects.filter(user_name=request.user.username).prefetch_related('book')
-    # user_reviews_book_ids = set(map(lambda x: x.book.id, user_reviews))
-    # book_list = Book.objects.exclude(id__in=user_reviews_book_ids)
-
-    user_reviews = Rating.objects.filter(user_name=request.user.username).prefetch_related('book')
-    user_reviews_book_ids = set(map(lambda x: x.book.id, user_reviews))
+    user_ratings = Rating.objects.filter(user_name=request.user.username).prefetch_related('book')
+    user_ratings_book_ids = set(map(lambda x: x.book.id, user_ratings))
     try:
         user_cluster_name = User.objects.get(username=request.user.username).cluster_set.first().name
     except:
@@ -88,16 +85,12 @@ def user_recommendation_list(request):
             .exclude(username=request.user.username).all()
     other_members_usernames = set(map(lambda x: x.username, user_cluster_other_members))
 
-    other_users_reviews = \
+    other_users_ratings = \
         Rating.objects.filter(user_name__in=other_members_usernames) \
-            .exclude(book__id__in=user_reviews_book_ids)
-    other_users_reviews_book_ids = set(map(lambda x: x.book.id, other_users_reviews))
+            .exclude(book__id__in=user_ratings_book_ids)
+    other_users_ratings_book_ids = set(map(lambda x: x.book.id, other_users_ratings))
 
-    book_list = sorted(
-        list(Book.objects.filter(id__in=other_users_reviews_book_ids)),
-        key=lambda x: x.average_rating,
-        reverse=True
-    )
+    book_list = list(Book.objects.filter(id__in=other_users_ratings_book_ids))
 
     return render(
         request,
