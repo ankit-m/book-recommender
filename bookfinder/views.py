@@ -56,6 +56,7 @@ def home(request):
                 volume['author'] = 'Not Available'
             book_list.append(volume)
             add_book(volume, user_name)
+            update_clusters()
         return render(request, 'bookfinder/home.html', {'form': form, 'book_list': book_list})
     return render(request, 'bookfinder/home.html', {'form': form})
 
