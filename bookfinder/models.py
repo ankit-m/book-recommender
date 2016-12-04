@@ -6,19 +6,24 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 import numpy as np
 
 class Book(models.Model):
-    name = models.CharField(max_length = 200)
+    gid = models.CharField(max_length = 50, unique = True, default = 'NA')
+    title = models.CharField(max_length = 200, default = 'NA')
+    author = models.CharField(max_length = 50, default = 'NA')
+    description = models.CharField(max_length = 5000, default = 'NA')
 
     def average_rating(self):
         all_ratings = map(lambda x: x.rating, self.review_set.all())
         return np.mean(all_ratings)
 
     def __unicode__(self):
-        return self.name
+        return self.title
 
-class Review(models.Model):
+class Rating(models.Model):
     book = models.ForeignKey(Book)
     user_name = models.CharField(max_length=100)
     rating = models.FloatField(validators = [MinValueValidator(0.0), MaxValueValidator(10.0)])
+    class Meta:
+        unique_together = ('book', 'user_name')
 
 class Cluster(models.Model):
     name = models.CharField(max_length=100)
