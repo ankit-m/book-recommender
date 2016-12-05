@@ -1,1 +1,1 @@
-web: python manage.py runserver
+web: gunicorn blockbuster.wsgi --log-file -
