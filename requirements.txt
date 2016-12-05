@@ -6,3 +6,4 @@ scipy
 scikit-learn
 gensim
 gunicorn
+dj_database_url
