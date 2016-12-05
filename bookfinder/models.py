@@ -6,7 +6,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 import numpy as np
 
 class Book(models.Model):
-    gid = models.CharField(max_length = 50, unique = True, default = 'NA')
+    gid = models.CharField(max_length = 200, unique = True, default = 'NA')
     title = models.CharField(max_length = 200, default = 'NA')
     author = models.CharField(max_length = 50, default = 'NA')
     url = models.URLField(default = 'NA')
