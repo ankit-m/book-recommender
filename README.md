@@ -47,7 +47,7 @@ This project uses Google Books API, Gensim API and Scikit Learn. The data flow i
 1. User submits idea in the root view
 2. Gensim finds the keywords
 3. Google Books API retreives similar books to the idea and displays on page
-4. The ratings are 
-5. The 'Book Suggestions' tab contains the recommended list of books for the user.
+4. The ratings are **implicitly derived** from users' search results
+5. We use k-means algorithm to obtain user clusters.
 
 For a more detailed explanation refer to the report.
