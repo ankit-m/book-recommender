@@ -7,3 +7,4 @@ scikit-learn
 gensim
 gunicorn
 dj_database_url
+psycopg2
