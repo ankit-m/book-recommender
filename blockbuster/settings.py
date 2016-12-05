@@ -28,7 +28,7 @@ SECRET_KEY = '5x3n4ku0il0h5y9p3+(7uif@4*6%aem9e9+b9=!5*b@rucj!(u'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'pacific-plains-24210.herokuapp.com'
+    'bookreco.herokuapp.com'
 ]
 
 
