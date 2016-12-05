@@ -43,9 +43,11 @@ pip install -r requirements.txt
 
 ### Pipeline
 
-This project uses Google Books API, Gensim API and Scikit Learn. The data flow in the project is as follows:-
+This project uses Google Books API, Gensim API and Scikit Learn. The data flow in the project is as follows:
 1. User submits idea in the root view
-2. Gensim finds the keywords and Google Books API retreives similar books to the idea and displays on page
-3. The 'Book Suggestions' tab contains the recommended list of books for the user.
+2. Gensim finds the keywords
+3. Google Books API retreives similar books to the idea and displays on page
+4. The ratings are 
+5. The 'Book Suggestions' tab contains the recommended list of books for the user.
 
 For a more detailed explanation refer to the report.
