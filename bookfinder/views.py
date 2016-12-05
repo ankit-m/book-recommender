@@ -9,6 +9,7 @@ from gensim.summarization import keywords
 import datetime
 import requests
 import json
+from django.db import transaction
 
 def add_book(volume, user_name):
     book, createdbook = Book.objects.get_or_create(
@@ -23,9 +24,10 @@ def add_book(volume, user_name):
         user_name = user_name,
         rating = 1.0
     )
-    if createdbook == True:
-        book.save()
-    rating.save()
+    with transaction.atomic():
+        if createdbook == True:
+            book.save()
+        rating.save()
 
 def make_api_call(payload):
     URL = 'https://www.googleapis.com/books/v1/volumes?q='
@@ -69,7 +71,6 @@ def home(request):
             return render(request, 'bookfinder/home.html', {'form': form, 'book_list': book_list})
         else:
             return render(request, 'bookfinder/home.html', {'form': form, 'error': 'Please type more.'})
-    form.idea = 'yooos'
     return render(request, 'bookfinder/home.html', {'form': form})
 
 @login_required
@@ -93,6 +94,17 @@ def user_recommendation_list(request):
     other_users_ratings_book_ids = set(map(lambda x: x.book.id, other_users_ratings))
 
     book_list = list(Book.objects.filter(id__in=other_users_ratings_book_ids))
+    for i in book_list:
+        if i.title[0] == '(':
+            i.title = i.title[3:-3]
+        if i.author[2] == 'N':
+            i.author = i.author[2:-3]
+        else:
+            i.author = i.author[3: -3]
+        if i.description[2] == 'N':
+            i.description = i.description[2:-3]
+        else:
+            i.description = i.description[3:-3]
 
     return render(
         request,
